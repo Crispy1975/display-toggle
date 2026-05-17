@@ -17,7 +17,16 @@ It calls the private `CGSConfigureDisplayEnabled` function from the SkyLight fra
 - macOS (Apple Silicon or Intel)
 - Xcode Command Line Tools: `xcode-select --install`
 
-## Build & install
+## Install
+
+**Via Homebrew (recommended):**
+
+```sh
+brew tap Crispy1975/display-toggle
+brew install display-toggle
+```
+
+**Build from source:**
 
 ```sh
 git clone https://github.com/Crispy1975/display-toggle
