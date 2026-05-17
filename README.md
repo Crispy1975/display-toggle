@@ -86,6 +86,30 @@ hs.hotkey.bind({"ctrl", "alt", "cmd"}, "d", function()
 end)
 ```
 
+### Auto-recovery when the external display is unplugged
+
+If you turn the built-in off and later unplug your external display, macOS leaves the built-in disabled — no display at all. A Hammerspoon screen watcher can detect this and re-enable the built-in automatically. Add this alongside the hotkey binding above (it reuses the same `DISPLAY_TOGGLE` and `BUILTIN_UUID` variables):
+
+```lua
+-- Filter out virtual displays (e.g. DeskPad) so they don't mask a missing physical display
+local function realScreens()
+    return hs.fnutils.filter(hs.screen.allScreens(), function(s)
+        local name = s:name() or ""
+        return not name:find("DeskPad", 1, true)
+    end)
+end
+
+-- Re-enable the built-in if all physical displays disappear
+-- (e.g. external unplugged while built-in was off)
+local screenWatcher = hs.screen.watcher.new(function()
+    if #realScreens() == 0 then
+        hs.execute(DISPLAY_TOGGLE .. " " .. BUILTIN_UUID .. " on", true)
+        hs.alert.show("Built-in display auto-enabled")
+    end
+end)
+screenWatcher:start()
+```
+
 ## How it works
 
 1. `display-toggle list` enumerates online displays via `CGGetOnlineDisplayList`, prints their UUIDs, and saves the `UUID → CGDirectDisplayID` mapping to `~/.config/display-toggle/state`.
