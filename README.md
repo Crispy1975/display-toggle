@@ -59,12 +59,22 @@ UUIDs are stable across reboots. Run `display-toggle list` once with all display
 
 State is persisted at `~/.config/display-toggle/state`.
 
+The install location varies by method — use `which display-toggle` to confirm yours:
+
+| Install method | Path |
+|---|---|
+| Homebrew, Apple Silicon | `/opt/homebrew/bin/display-toggle` |
+| Homebrew, Intel Mac | `/usr/local/bin/display-toggle` |
+| `make install` (default) | `/usr/local/bin/display-toggle` |
+| `make install PREFIX=~/.local` | `~/.local/bin/display-toggle` |
+
 ## Hammerspoon integration
 
 [Hammerspoon](https://github.com/Hammerspoon/hammerspoon) is a macOS automation tool that lets you bind shell commands to keyboard shortcuts. Bind a key to toggle your MacBook's built-in display (replace the UUID with yours from `display-toggle list`):
 
 ```lua
-local DISPLAY_TOGGLE = "/usr/local/bin/display-toggle"
+local brew_prefix    = hs.execute("brew --prefix", true):gsub("%s+$", "")
+local DISPLAY_TOGGLE = brew_prefix .. "/bin/display-toggle"
 local BUILTIN_UUID   = "YOUR-BUILTIN-UUID-HERE"  -- from: display-toggle list
 
 -- Seed state at startup while both displays are active
