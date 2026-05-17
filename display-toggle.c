@@ -1,5 +1,21 @@
 /*
  * display-toggle — toggle any macOS display on or off by UUID
+ * Copyright (C) 2025 Crispy1975
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * ---
  *
  * macOS removes a disabled display's UUID from the online display list,
  * making it impossible to re-enable via UUID lookup alone. This tool saves
@@ -17,9 +33,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreGraphics/CGDisplayConfiguration.h>
 #include <dlfcn.h>
-#include <errno.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 
@@ -47,7 +61,8 @@ static void uuid_for_display(CGDirectDisplayID did, char out[40]) {
  * Format: one "<UUID> <id>" pair per line.
  */
 
-#define MAX_ENTRIES 32
+#define MAX_DISPLAYS 32
+#define MAX_ENTRIES  32
 
 typedef struct { char uuid[40]; CGDirectDisplayID did; } Entry;
 static Entry g_entries[MAX_ENTRIES];
@@ -113,8 +128,8 @@ static CGDirectDisplayID lookup(const char *uuid) {
 static void cmd_list(void) {
     uint32_t count = 0;
     CGGetOnlineDisplayList(0, NULL, &count);
-    CGDirectDisplayID displays[32];
-    if (count > 32) count = 32;
+    CGDirectDisplayID displays[MAX_DISPLAYS];
+    if (count > MAX_DISPLAYS) count = MAX_DISPLAYS;
     CGGetOnlineDisplayList(count, displays, &count);
 
     printf("%-36s  %-8s  %-8s  Resolution\n", "UUID", "Active", "Built-in");
@@ -142,8 +157,8 @@ typedef enum { ACTION_TOGGLE = -1, ACTION_OFF = 0, ACTION_ON = 1 } Action;
 static int cmd_toggle(const char *uuid, Action action) {
     uint32_t count = 0;
     CGGetOnlineDisplayList(0, NULL, &count);
-    CGDirectDisplayID displays[32];
-    if (count > 32) count = 32;
+    CGDirectDisplayID displays[MAX_DISPLAYS];
+    if (count > MAX_DISPLAYS) count = MAX_DISPLAYS;
     CGGetOnlineDisplayList(count, displays, &count);
 
     /* Search online list first */
@@ -160,7 +175,8 @@ static int cmd_toggle(const char *uuid, Action action) {
         bool enable = (action == ACTION_TOGGLE) ? !active : (action == ACTION_ON);
 
         if (enable == active) {
-            printf("%s (already %s)\n", active ? "on" : "off", active ? "on" : "off");
+            const char *state = active ? "on" : "off";
+            printf("%s (already %s)\n", state, state);
             return 0;
         }
 

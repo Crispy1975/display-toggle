@@ -20,7 +20,7 @@ It calls the private `CGSConfigureDisplayEnabled` function from the SkyLight fra
 ## Build & install
 
 ```sh
-git clone https://github.com/your-username/display-toggle
+git clone https://github.com/Crispy1975/display-toggle
 cd display-toggle
 make
 make install          # installs to /usr/local/bin
@@ -52,11 +52,11 @@ State is persisted at `~/.config/display-toggle/state`.
 
 ## Hammerspoon integration
 
-Bind a key to toggle your MacBook's built-in display (replace the UUID with yours from `display-toggle list`):
+[Hammerspoon](https://github.com/Hammerspoon/hammerspoon) is a macOS automation tool that lets you bind shell commands to keyboard shortcuts. Bind a key to toggle your MacBook's built-in display (replace the UUID with yours from `display-toggle list`):
 
 ```lua
 local DISPLAY_TOGGLE = "/usr/local/bin/display-toggle"
-local BUILTIN_UUID   = "37D8832A-2D66-02CA-B9F7-8F30A301B230"
+local BUILTIN_UUID   = "YOUR-BUILTIN-UUID-HERE"  -- from: display-toggle list
 
 -- Seed state at startup while both displays are active
 hs.execute(DISPLAY_TOGGLE .. " list", true)
@@ -75,4 +75,4 @@ end)
 
 ## License
 
-MIT
+[GNU General Public License v3.0](LICENSE)
